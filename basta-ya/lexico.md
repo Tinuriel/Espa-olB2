@@ -26,3 +26,4 @@
 | la amenaza | угроза | El cambio climático es una *amenaza* para todos. |
 | chapar | обшивать, покрывать (металлом); разг. (Испания): закрывать (заведение), зубрить | Una puerta *chapada* en acero. / *Chapan* el bar a las dos. / Tengo que *chapar* todo el temario. |
 | el/la firmante | подписавший, подписант | Los *firmantes* del manifiesto exigen cambios. |
+| apelar a la lástima | давить на жалость, взывать к жалости (*apelar a* — взывать к, обращаться к) | El anuncio *apela a la lástima* para conseguir donaciones. |
