@@ -63,15 +63,32 @@ th { font-size: 14px; color: var(--muted); font-weight: 600; }
 tbody tr:nth-child(even) { background: var(--row-alt); }
 td:first-child { font-weight: 600; min-width: 11em; }
 @media (max-width: 640px) {
-  thead { display: none; }
-  table, tbody, tr, td { display: block; }
-  tr { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-  td { padding: 0; border: 0; min-width: 0; }
-  td:first-child { min-width: 0; }
-  td + td { margin-top: 2px; }
-  td:nth-child(3) { color: var(--muted); font-size: 15px; margin-top: 6px; }
-  td:empty { display: none; }
+  table:not(.conj) thead { display: none; }
+  table:not(.conj), table:not(.conj) tbody, table:not(.conj) tr, table:not(.conj) td { display: block; }
+  table:not(.conj) tr { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  table:not(.conj) td { padding: 0; border: 0; min-width: 0; }
+  table:not(.conj) td:first-child { min-width: 0; }
+  table:not(.conj) td + td { margin-top: 2px; }
+  table:not(.conj) td:nth-child(3) { color: var(--muted); font-size: 15px; margin-top: 6px; }
+  table:not(.conj) td:empty { display: none; }
 }
 h3 { font-size: 17px; margin: 24px 0 8px; color: var(--muted); }
 ul.anchors { padding-left: 20px; margin: 0 0 8px; }
 .tr { color: var(--muted); font-size: 15px; }
+
+/* Спряжение глаголов */
+main.wide { max-width: 1200px; }
+nav.letters { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+nav.letters a {
+  min-width: 34px; padding: 4px 8px; text-align: center; text-decoration: none; font-weight: 600;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+}
+section.verb { scroll-margin-top: 12px; }
+section.verb h2 { margin: 32px 0 8px; }
+section.verb h2 .ru { font-weight: 400; color: var(--muted); font-size: 17px; }
+table.conj { font-size: 15px; }
+table.conj th, table.conj td { padding: 6px 10px; white-space: nowrap; }
+table.conj td:first-child { font-weight: 400; min-width: 0; }
+table.conj tbody th { color: var(--muted); font-weight: 500; position: sticky; left: 0; background: var(--surface); }
+table.conj tbody tr:nth-child(even) th { background: var(--row-alt); }
+table.conj td.irr, .irr-sample { color: var(--accent); font-weight: 600; }
