@@ -72,3 +72,5 @@ td:first-child { font-weight: 600; min-width: 11em; }
   td:nth-child(3) { color: var(--muted); font-size: 15px; margin-top: 6px; }
   td:empty { display: none; }
 }
+h3 { font-size: 17px; margin: 24px 0 8px; color: var(--muted); }
+ul.anchors { padding-left: 20px; margin: 0 0 8px; }
