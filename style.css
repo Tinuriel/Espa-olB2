@@ -93,3 +93,4 @@ table.conj td:first-child { font-weight: 400; min-width: 0; }
 table.conj tbody th { color: var(--muted); font-weight: 500; position: sticky; left: 0; background: var(--surface); }
 table.conj tbody tr:nth-child(even) th { background: var(--row-alt); }
 table.conj td.irr, .irr-sample { color: var(--accent); font-weight: 600; }
+.table-wrap + .table-wrap { margin-top: 16px; }
