@@ -94,3 +94,5 @@ table.conj tbody th { color: var(--muted); font-weight: 500; position: sticky; l
 table.conj tbody tr:nth-child(even) th { background: var(--row-alt); }
 table.conj td.irr, .irr-sample { color: var(--accent); font-weight: 600; }
 .table-wrap + .table-wrap { margin-top: 16px; }
+table.lectura th, table.lectura td { white-space: normal; }
+table.lectura tbody th { color: var(--accent); font-weight: 700; font-size: 18px; }
