@@ -155,3 +155,5 @@ body.fc-open { overflow: hidden; }
   .fc-front { font-size: 24px; }
   .fc-back { font-size: 22px; }
 }
+.mood-subj { color: var(--accent); }
+.mood-ind { color: var(--good); }
