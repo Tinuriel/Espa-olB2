@@ -1,5 +1,6 @@
 // Флеш-карточки с интервальным повторением (упрощённый Лейтнер).
 // Слова берутся из таблиц страницы: 1-я колонка — испанский, 2-я — русский, 3-я — пример.
+// Карточки, отмеченные «Трудно», попадают в отдельную колоду «Трудные» и остаются там, пока не нажать «Знаю».
 // Прогресс хранится в localStorage этого браузера.
 (function () {
   var STORE = 'fc-v1';
@@ -45,13 +46,14 @@
   function key(card, dir) { return card.id + '|' + dir; }
 
   function counts(dir) {
-    var data = load(), now = Date.now(), c = { new: 0, due: 0, learned: 0 };
+    var data = load(), now = Date.now(), c = { new: 0, due: 0, learned: 0, hard: 0 };
     collect().forEach(function (card) {
       var r = data[key(card, dir)];
       if (!r) c.new++;
       else {
         if (r.d <= now) c.due++;
         if (r.b >= LEARNED_BOX) c.learned++;
+        if (r.h) c.hard++;
       }
     });
     return c;
@@ -75,6 +77,10 @@
       '<button type="button" class="fc-btn" data-dir="es">Карточки ES → RU</button>' +
       '<button type="button" class="fc-btn" data-dir="ru">Карточки RU → ES</button>' +
     '</div>' +
+    '<div class="fc-start fc-hard-start">' +
+      '<button type="button" class="fc-btn fc-btn-hard" data-hard="es">Трудные ES → RU</button>' +
+      '<button type="button" class="fc-btn fc-btn-hard" data-hard="ru">Трудные RU → ES</button>' +
+    '</div>' +
     '<div class="fc-stats"></div>' +
     '<div class="fc-links">' +
       '<button type="button" class="fc-link" data-act="export">Сохранить прогресс</button> · ' +
@@ -89,8 +95,13 @@
     panel.querySelector('.fc-stats').innerHTML = ['es', 'ru'].map(function (dir) {
       var c = counts(dir);
       return '<span><strong>' + (dir === 'es' ? 'ES → RU' : 'RU → ES') + ':</strong> новых ' + c.new +
-        ' · повторить ' + c.due + ' · выучено ' + c.learned + '</span>';
+        ' · повторить ' + c.due + ' · выучено ' + c.learned + ' · трудных ' + c.hard + '</span>';
     }).join('') + hint;
+    panel.querySelectorAll('[data-hard]').forEach(function (b) {
+      var n = counts(b.dataset.hard).hard;
+      b.textContent = 'Трудные ' + (b.dataset.hard === 'es' ? 'ES → RU' : 'RU → ES') + ' (' + n + ')';
+      b.disabled = !n;
+    });
   }
   renderStats();
   var filter = document.querySelector('input.filter');
@@ -98,6 +109,9 @@
 
   panel.querySelectorAll('[data-dir]').forEach(function (b) {
     b.addEventListener('click', function () { startSession(b.dataset.dir, false); });
+  });
+  panel.querySelectorAll('[data-hard]').forEach(function (b) {
+    b.addEventListener('click', function () { startSession(b.dataset.hard, 'hard'); });
   });
 
   // ---------- Экспорт / импорт ----------
@@ -131,12 +145,15 @@
   });
 
   // ---------- Режим карточек ----------
-  var overlay, queue, current, flipped, dir, tally;
+  var overlay, queue, current, flipped, dir, tally, mode;
 
+  // all: false — обычная сессия; true — все карточки; 'hard' — колода «Трудно» (все, без лимита)
   function startSession(d, all) {
     dir = d;
+    mode = all;
     var data = load(), now = Date.now(), cards = collect();
-    if (all) queue = shuffle(cards.slice());
+    if (all === 'hard') queue = shuffle(cards.filter(function (c) { var r = data[key(c, dir)]; return r && r.h; }));
+    else if (all) queue = shuffle(cards.slice());
     else {
       var due = cards.filter(function (c) { var r = data[key(c, dir)]; return r && r.d <= now; });
       var fresh = cards.filter(function (c) { return !data[key(c, dir)]; }).slice(0, NEW_PER_SESSION);
@@ -202,8 +219,9 @@
   function grade(g) {
     if (!flipped) return;
     var data = load(), k = key(current, dir), r = data[k] || { b: 0 }, now = Date.now();
-    if (g === 'yes') { r.b = Math.min(r.b + 1, DAYS.length - 1); r.d = now + DAYS[r.b] * DAY; }
-    else if (g === 'hard') { r.d = now + DAY; }
+    // «Трудно» кладёт карточку в отдельную колоду; оттуда её убирает только «Знаю»
+    if (g === 'yes') { r.b = Math.min(r.b + 1, DAYS.length - 1); r.d = now + DAYS[r.b] * DAY; delete r.h; }
+    else if (g === 'hard') { r.d = now + DAY; r.h = 1; }
     else { r.b = 0; r.d = now; queue.push(current); }
     r.t = now;
     data[k] = r;
@@ -223,6 +241,13 @@
 
   function empty() {
     left('');
+    if (mode === 'hard') {
+      body('<div class="fc-done"><h2>Трудных карточек нет</h2>' +
+        '<p>Сюда попадают карточки, на которых ты нажала «Трудно». Они остаются здесь, пока не нажмёшь «Знаю».</p>' +
+        '<button type="button" class="fc-btn fc-end">Закрыть</button></div>');
+      overlay.querySelector('.fc-end').addEventListener('click', close);
+      return;
+    }
     body('<div class="fc-done"><h2>На сегодня всё</h2>' +
       '<p>Новых карточек нет, а повторять ещё рано.</p>' +
       '<button type="button" class="fc-btn fc-all">Пройти все карточки ещё раз</button> ' +
