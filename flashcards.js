@@ -28,13 +28,15 @@
   }
 
   function collect() {
-    var cards = [];
+    var cards = [], seen = {};
     document.querySelectorAll('table:not(.conj) tbody tr').forEach(function (tr) {
       if (tr.closest('[hidden]')) return;
       var td = tr.querySelectorAll('td');
       if (td.length < 2) return;
       var es = td[0].textContent.trim();
       if (!es) return;
+      if (seen[es]) return;
+      seen[es] = true;
       cards.push({ id: page + '|' + es, es: cellHTML(td[0]), ru: cellHTML(td[1]), ex: cellHTML(td[2]) });
     });
     return cards;
